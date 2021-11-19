@@ -52,7 +52,7 @@ public class Attendance extends AppCompatActivity {
     RequestQueue requestQueue;
     Button btnGetPdfGo,btnSetPresent;
     EditText editDate2,editStrength;
-    Double eexp1=0.0,eexp2=0.0,eexp3=0.0,eexptotal=0.0;
+    Double eexp1=0.0,eexp2=0.0,eexp3=0.0,eexp4=0.0,eexptotal=0.0,eexptotalbr=0.0;
     HashMap<String,Integer> present = new HashMap<String, Integer>();
 
     @Override
@@ -66,7 +66,7 @@ public class Attendance extends AppCompatActivity {
         editDate2.setText(Date);
         editStrength=findViewById(R.id.editStrength);
         Spinner spinner = findViewById(R.id.spinner);
-        String[] spinItems = new String[]{"V-VII", "VIII-X", "STAFF"};
+        String[] spinItems = new String[]{"V-VII", "VIII-X","INTER", "STAFF"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, spinItems);
         spinner.setAdapter(adapter);
         btnGetPdfGo.setOnClickListener(new View.OnClickListener() {
@@ -157,12 +157,15 @@ public class Attendance extends AppCompatActivity {
         fontH2.isBold();
         Integer present1 = present.get("V-VII");
         Integer present2 = present.get("VIII-X");
-        Integer present3 = present.get("STAFF");
+        Integer present3 = present.get("INTER");
+        Integer present4 = present.get("STAFF");
         eexp1 = Math.round(present1 *28.759*100.0)/100.0;
         eexp2 = Math.round(present2 *33.931*100.0)/100.0;
         eexp3 = Math.round(present3 *33.931*100.0)/100.0;
-        eexptotal = eexp1+eexp2+eexp3;
-        double attTotal = present.get("V-VII")+present.get("VIII-X")+present.get("STAFF");
+        eexp4 = Math.round(present4 *33.931*100.0)/100.0;
+        eexptotalbr = eexp1+eexp2+eexp3+eexp4;
+        eexptotal = Math.round(eexptotalbr*100)/100.0;
+        double attTotal = present.get("V-VII")+present.get("VIII-X")+present.get("STAFF")+present.get("INTER");
 
 
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -329,10 +332,27 @@ public class Attendance extends AppCompatActivity {
                 eexpt.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table5.addCell(eexpt);
                 table5.addCell(new Phrase("3", fontH2));
+                table5.addCell(new Phrase("INTER", fontH2));
+                table5.addCell(new Phrase(String.valueOf(present.get("INTER")), fontH2));
+                table5.addCell(new Phrase("33.931", fontH2));
+                table5.addCell(new Phrase(String.valueOf(eexp3), fontH2));
+
+                table5.addCell(new Phrase("4", fontH2));
                 table5.addCell(new Phrase("STAFF", fontH2));
                 table5.addCell(new Phrase(String.valueOf(present.get("STAFF")), fontH2));
                 table5.addCell(new Phrase("33.931", fontH2));
-                table5.addCell(new Phrase(String.valueOf(eexp3), fontH2));
+                table5.addCell(new Phrase(String.valueOf(eexp4), fontH2));
+
+                PdfPCell percap = new PdfPCell(new Phrase("PER-CAPITA", fontH1));
+                percap.setRowspan(2);
+                percap.setHorizontalAlignment(Element.ALIGN_CENTER);
+                percap.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                table5.addCell(percap);
+                PdfPCell percapf = new PdfPCell(new Phrase(String.valueOf(percapita), fontH1));
+                percapf.setRowspan(2);
+                percapf.setHorizontalAlignment(Element.ALIGN_CENTER);
+                percapf.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                table5.addCell(percapf);
 
                 PdfPCell tot = new PdfPCell(new Phrase("TOTAL", fontH1));
                 tot.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -342,16 +362,7 @@ public class Attendance extends AppCompatActivity {
                 table5.addCell(new Phrase(String.valueOf(attTotal), fontH2));
                 table5.addCell(new Phrase("", fontH2));
                 table5.addCell(new Phrase(String.valueOf(eexptotal), fontH2));
-                PdfPCell percap = new PdfPCell(new Phrase("PER-CAPITA", fontH1));
-                percap.setHorizontalAlignment(Element.ALIGN_CENTER);
-                percap.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                percap.setRowspan(2);
-                table5.addCell(percap);
-                PdfPCell percap3 = new PdfPCell(new Phrase(percapita +"\n", fontH1));
-                percap3.setHorizontalAlignment(Element.ALIGN_CENTER);
-                percap3.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                percap3.setRowspan(2);
-                table5.addCell(percap3);
+
                 Paragraph paragraph = new Paragraph("DEPUTY WARDEN                                           PRINCIPAL");
                 paragraph.setAlignment(Element.ALIGN_CENTER);
                 paragraph.setSpacingBefore(120);
